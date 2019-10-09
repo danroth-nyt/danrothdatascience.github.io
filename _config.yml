@@ -3,7 +3,7 @@ title: Dan Roth
 email: rdan689@gmail.com
 url: https://danrothdatascience.github.io
 description: "Dan Roth's Data Science blog."
-keywords: "dan roth, data science"
+keywords: "dan roth, data science nyc"
 skills: "Data Scientist - Research Engineer"
 meta_author: Roth Dan
 
@@ -39,8 +39,8 @@ footer:
 
 # Social networks usernames (many more available: google-plus, flickr, dribbble, pinterest, instagram, tumblr, linkedin, etc.)
 social:
-  - title: stack-overflow
-    url: http://stackoverflow.com/questions/tagged/jekyll
+  - title: linkedin
+    url: https://www.linkedin.com/in/dan-roth-b5953592/
   - title: github
     url: https://github.com/DanRothDataScience
 
