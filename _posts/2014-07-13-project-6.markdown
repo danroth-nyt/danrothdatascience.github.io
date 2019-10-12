@@ -1,0 +1,22 @@
+---
+layout: default
+modal-id: 1
+date: 2019-10-19
+img: book512.png
+alt: image-alt
+project-date: October 2019
+client: Goodreads
+category: Data Science
+description: An investigation into the most effective Goodreads website interactions for predicting whether or not 
+a user will want to read a book.  
+
+---
+
+# What are the best predictors for interest in a book on Goodreads?
+
+[Goodreads.com](http://goodreads.com) is essentially a social networking website for book lovers; the site introduces 
+a slew of new social interactions related to reading books.  But how many of them are pertinent to the average 
+Goodreads user?  In order to answer this question, I decided to explore the use of a linear regression model to 
+predict the total number of people that would want to read a book on Goodreads.  Thankfully, Goodreads tracks an 
+insightful statistic called "to-read," which records the number of users that indicate their desire to read a book on a 
+book's Goodreads page. 
