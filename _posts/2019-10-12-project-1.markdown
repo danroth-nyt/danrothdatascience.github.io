@@ -5,7 +5,7 @@ date: 2019-10-19
 img: cabin.png
 alt: image-alt
 project-date: October 2019
-client: Goodreads
+client: Start Bootstrap
 category: Web Development
 description: An investigation into the most effective Goodreads website interactions for predicting whether or not 
 a user will want to read a book.  
@@ -21,7 +21,7 @@ predict the total number of people that would want to read a book on Goodreads. 
 insightful statistic called "to-read," which records the number of users that indicate their desire to read a book on a 
 book's Goodreads page. 
 
-![sample goodreads page](https://github.com/DanRothDataScience/danrothdatascience.github.io/blob/master/_posts/img/gr_sample_page.png "A Tale of Two Cities on Goodreads")
+![sample goodreads page](https://github.com/DanRothDataScience/danrothdatascience.github.io/blob/master/img/posts/gr_sample_page.png "A Tale of Two Cities on Goodreads")
 
 ## Web Scraping Using BeautifulSoup4 and Selenium
 
