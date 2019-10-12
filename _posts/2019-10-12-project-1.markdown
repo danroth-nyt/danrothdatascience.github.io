@@ -1,0 +1,35 @@
+---
+layout: default
+modal-id: 1
+date: 2019-10-19
+img: book512.png
+alt: image-alt
+project-date: October 2019
+client: Goodreads
+category: Data Science
+description: An investigation into the most effective Goodreads website interactions for predicting whether or not 
+a user will want to read a book.  
+
+---
+
+# What are the best predictors for interest in a book on Goodreads?
+
+[Goodreads.com](http://goodreads.com) is essentially a social networking website for book lovers; the site introduces 
+a slew of new social interactions related to reading books.  But how many of them are pertinent to the average 
+Goodreads user?  In order to answer this question, I decided to explore the use of a linear regression model to 
+predict the total number of people that would want to read a book on Goodreads.  Thankfully, Goodreads tracks an 
+insightful statistic called "to-read," which records the number of users that indicate their desire to read a book on a 
+book's Goodreads page. 
+
+![sample goodreads page](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")
+
+## Web Scraping Using BeautifulSoup4 and Selenium
+
+In order to create a dataset of books and their attributes I chose to use the BeautifulSoup4 and Selenium packages in 
+Python3.  There were several key features that I chose to collect from Goodreads' book pages.  They included a number of
+different attributes such as the number of followers an author had, representing their popularity, to categorical features
+such as book genre and binding.  I collected the number of trivia questions and "likes" that a quote from the book had 
+as well as the amazon adn kindle prices if available.  While most of the html information I was looking for could easily 
+be scraped using BeautifulSoup4, there were some specific interactions that required Selenium, such as the ability to 
+click the link to a book's Amazon page to scrape the price or logging in to access the special book stats section of a
+Goodreads page.   
