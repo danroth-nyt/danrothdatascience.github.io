@@ -5,8 +5,8 @@ date: 2019-10-11
 img: cabin.png
 alt: image-alt
 project-date: October 2019
-client: Goodreads
-category: Data Science
+client: Start Bootstrap
+category: Web Development
 description: An investigation into the most effective Goodreads website interactions for predicting whether or not 
 a user will want to read a book.  
 
