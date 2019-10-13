@@ -1,8 +1,8 @@
 ---
 layout: default
 modal-id: 1
-date: 2019-10-19
-img: book512.png
+date: 2019-10-11
+img: cabin.png
 alt: image-alt
 project-date: October 2019
 client: Goodreads
