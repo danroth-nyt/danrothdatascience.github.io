@@ -7,8 +7,8 @@ alt: image-alt
 project-date: October 2019
 client: Start Bootstrap
 category: Web Development
-description: An investigation into the most effective Goodreads website interactions for predicting whether or not 
-a user will want to read a book.  
+description: An investigation into the most effective Goodreads website interactions for predicting whether or not a 
+user will want to read a book.  
 
 ---
 
@@ -18,10 +18,11 @@ a user will want to read a book.
 a slew of new social interactions related to reading books.  But how many of them are pertinent to the average 
 Goodreads user?  In order to answer this question, I decided to explore the use of a linear regression model to 
 predict the total number of people that would want to read a book on Goodreads.  Thankfully, Goodreads tracks an 
-insightful statistic called "to-read," which records the number of users that indicate their desire to read a book on a 
+insightful statistic called "want to read," which records the number of users that indicate their desire to read a book on a 
 book's Goodreads page. 
 
-![sample goodreads page](https://github.com/DanRothDataScience/danrothdatascience.github.io/blob/master/_posts/img/gr_sample_page.png "A Tale of Two Cities on Goodreads")
+![sample goodreads page](../img/posts/gr_sample_page.png "A Tale of Two Cities on Goodreads")
+*A sample page from Goodreads with the "want to read" button highlighted in red.*
 
 ## Web Scraping Using BeautifulSoup4 and Selenium
 
@@ -29,24 +30,26 @@ In order to create a dataset of books and their attributes I chose to use the Be
 Python3.  There were several key features that I chose to collect from Goodreads' book pages.  They included a number of
 different attributes such as the number of followers an author had, representing their popularity, to categorical features
 such as book genre and binding.  I collected the number of trivia questions and "likes" that a quote from the book had 
-as well as the amazon adn kindle prices if available.  While most of the html information I was looking for could easily 
+as well as the amazon and kindle prices if available.  While most of the html information I was looking for could easily 
 be scraped using BeautifulSoup4, there were some specific interactions that required Selenium, such as the ability to 
 click the link to a book's Amazon page to scrape the price or logging in to access the special book stats section of a
-Goodreads page.  You can examine the scrape code [here at my project repository](https://github.com/DanRothDataScience/goodreads_scrape_predict/blob/master/goodread_scrape.py).
-The only trick to scraping was finding out a way to avoid 403 or 404 status code form Goodreads from using Selenium. 
+Goodreads page.  You can examine the scrape code 
+[here at my project repository](https://github.com/DanRothDataScience/goodreads_scrape_predict/blob/master/goodread_scrape.py).
+The biggest trick to scraping was finding out a way to prevent Goodreads from returning a 403 or 404 status code while using Selenium. 
 Ultimately I decided on using a 30 second pause for every 5 entries I scraped in order to avoid being locked out of the
 website.
 
-## Initial EDA, or Getting Acquainted with the Dataset
+## Initial EDA (Getting Acquainted with the Dataset)
 
-I first imported my data and took a look at the initial statistics for my features.
+I first imported my data and took a look at the initial statistics for my features.  I had scraped around 1800 raw data
+points to start.
 
-```jupyterpython
+```python
 # load dataframe
 book_df = pd.read_pickle("data/book_data.pkl")
 book_df.describe()
 ```
-```jupyterpython
+```python
 |       |    index |       book_num |   followers |   pub_date |   og_pub_date |   avg_rating |    pages |   perc_like |      trivia |   quote_likes |   rev_likes |   num_revs |      num_ratings |   kindle_price |   amzn_price |      total_added |   total_to_read |    avg_added |   avg_to_read |
 |:------|---------:|---------------:|------------:|-----------:|--------------:|-------------:|---------:|------------:|------------:|--------------:|------------:|-----------:|-----------------:|---------------:|-------------:|-----------------:|----------------:|-------------:|--------------:|
 | count | 1801     | 1801           |     1801    |  1543      |      755      |   1801       | 1444     |   1801      | 1801        |      1801     |   1801      |   1801     |   1801           |        51      |     124      |   1801           |  1801           | 1801         |  1801         |
@@ -59,10 +62,10 @@ book_df.describe()
 | max   | 1800     |    8.62541e+06 |   276972    |  2019      |     2010      |      5       | 3604     |    100      |  169        |     15776     |   1206      |  98898     |      4.51096e+06 |       209.22   |     722.32   |      5.39163e+06 |     1.08213e+06 | 1817.99      |   627.883     |
 ```
 I then got a feel for my raw dataframe.
-```jupyterpython
+```python
 book_df.info()
 ```
-```jupyterpython
+```python
 <class 'pandas.core.frame.DataFrame'>
 RangeIndex: 1801 entries, 0 to 1800
 Data columns (total 24 columns):
@@ -95,13 +98,13 @@ memory usage: 337.8+ KB
 ```
 I then filtered out bad columns, such as those with both an unknown title and author from the scrape.  Sadly the Kindle
 and Amazon price columns yielded few returns and so were not very useful.
-```jupyterpython
+```python
 # filter out unknowns and bad columns
 mask = ((book_df.title != 'Unknown') & (book_df.author != 'Unknown'))
 book_df = book_df[mask].drop(['kindle_price', 'amzn_price', 'index'], axis=1)
 book_df.info()
 ```
-```jupyterpython
+```python
 <class 'pandas.core.frame.DataFrame'>
 Int64Index: 1790 entries, 0 to 1800
 Data columns (total 21 columns):
@@ -131,7 +134,7 @@ memory usage: 307.7+ KB
 ```
 I then cleaned several of the categorical features in order to aggregate the category values that were deemed to be too
 rare.
-```jupyterpython
+```python
 # clean binding category
 book_df.binding = book_df.binding\
 .replace(['Kindle Edition', 'e book', 'Nook'], 'ebook')\
@@ -144,7 +147,7 @@ book_df.binding = book_df.binding.replace(other, 'Other')
 
 book_df.binding.value_counts()
 ```
-```jupyterpython
+```python
 Paperback          765
 Hardcover          582
 Unknown Binding    294
@@ -153,7 +156,7 @@ Other               44
 Audio               36
 Name: binding, dtype: int64
 ```
-```jupyterpython
+```python
 # clean genre category
 genre_count = book_df.genre.value_counts()
 other = list(genre_count[genre_count <= 10].index)
@@ -161,7 +164,7 @@ other = list(genre_count[genre_count <= 10].index)
 book_df.genre = book_df.genre.replace(other, 'Other')
 book_df.genre.value_counts()
 ```
-```jupyterpython
+```python
 Unknown            1132
 Other               220
 Fiction              54
@@ -183,7 +186,7 @@ Philosophy           11
 Science Fiction      11
 Name: genre, dtype: int64
 ```
-```jupyterpython
+```python
 # clean language category
 lang_count = book_df.language.value_counts()
 other = list(lang_count[lang_count < 4].index)
@@ -191,7 +194,7 @@ other = list(lang_count[lang_count < 4].index)
 book_df.language = book_df.language.replace(other, 'Other')
 book_df.language.value_counts()
 ```
-```jupyterpython
+```python
 English       1182
 Unknown        449
 Spanish         49
@@ -208,22 +211,22 @@ Arabic           4
 Name: language, dtype: int64
 ```
 I then examined the top performing books in order to get a sense of context for what was in my dataset.
-```jupyterpython
+```python
 # print top performing books
 book_df.sort_values(by='total_to_read', ascending=False).head()
 ```
-```jupyterpython
-|      |   index |   book_num | title                   | author             |   followers |   pub_date |   og_pub_date |   avg_rating | genre    | binding         |   pages | language   |   perc_like |   trivia |   quote_likes |   rev_likes |   num_revs |   num_ratings |   kindle_price |   amzn_price |   total_added |   total_to_read |   avg_added |   avg_to_read |
-|-----:|--------:|-----------:|:------------------------|:-------------------|------------:|-----------:|--------------:|-------------:|:---------|:----------------|--------:|:-----------|------------:|---------:|--------------:|------------:|-----------:|--------------:|---------------:|-------------:|--------------:|----------------:|------------:|--------------:|
-|   18 |      18 |    1592409 | Senkyūhyakuhachijūyonen | George Orwell      |       30197 |        nan |           nan |         4.17 | nan      | Unknown Binding |     nan | Unknown    |          94 |        0 |         13078 |        1190 |      60040 |       2692663 |            nan |          nan |       4139645 |         1082134 |    1817.99  |       627.883 |
-|  259 |     259 |      69438 | Crepúsculo              | Stephenie Meyer    |       58712 |       2006 |          2005 |         3.59 | nan      | Paperback       |     512 | Spanish    |          78 |        0 |         10198 |         965 |      98898 |       4510958 |            nan |          nan |       5391634 |          634932 |    1196.84  |       258.251 |
-| 1540 |    1540 |    5802013 | A Tale of Two Cities    | Charles Dickens    |       21408 |       2008 |          1859 |         3.83 | Classics | Paperback       |     404 | English    |          88 |      169 |          2727 |         675 |      15778 |        756962 |            nan |          nan |       1385416 |          502501 |     382.977 |       189.626 |
-|   48 |      48 |    7801326 | El dador de recuerdos   | Lois Lowry         |       16518 |       2010 |          1993 |         4.12 | nan      | Hardcover       |     240 | Spanish    |          94 |        0 |          5119 |        1206 |      61522 |       1573319 |            nan |          nan |       2212217 |          431672 |     706.947 |       175.544 |
-| 1155 |    1155 |    1057993 | Crime and Punishment    | Fyodor Dostoyevsky |       31233 |       1981 |          1866 |         4.21 | nan      | Paperback       |     472 | English    |          94 |        0 |          6160 |         711 |      16232 |        552376 |            nan |          nan |         65053 |          410809 |     459.778 |       219.988 |
+```python
+|      |   book_num | title                   | author             |   followers |   pub_date |   og_pub_date |   avg_rating | genre    | binding         |   pages | language   |   perc_like |   trivia |   quote_likes |   rev_likes |   num_revs |   num_ratings |   total_added |   total_to_read |   avg_added |   avg_to_read |
+|-----:|-----------:|:------------------------|:-------------------|------------:|-----------:|--------------:|-------------:|:---------|:----------------|--------:|:-----------|------------:|---------:|--------------:|------------:|-----------:|--------------:|--------------:|----------------:|------------:|--------------:|
+|   18 |    1592409 | Senkyūhyakuhachijūyonen | George Orwell      |       30197 |        nan |           nan |         4.17 | nan      | Unknown Binding |     nan | Unknown    |          94 |        0 |         13078 |        1190 |      60040 |       2692663 |       4139645 |         1082134 |    1817.99  |       627.883 |
+|  259 |      69438 | Crepúsculo              | Stephenie Meyer    |       58712 |       2006 |          2005 |         3.59 | nan      | Paperback       |     512 | Spanish    |          78 |        0 |         10198 |         965 |      98898 |       4510958 |       5391634 |          634932 |    1196.84  |       258.251 |
+| 1540 |    5802013 | A Tale of Two Cities    | Charles Dickens    |       21408 |       2008 |          1859 |         3.83 | Classics | Paperback       |     404 | English    |          88 |      169 |          2727 |         675 |      15778 |        756962 |       1385416 |          502501 |     382.977 |       189.626 |
+|   48 |    7801326 | El dador de recuerdos   | Lois Lowry         |       16518 |       2010 |          1993 |         4.12 | nan      | Hardcover       |     240 | Spanish    |          94 |        0 |          5119 |        1206 |      61522 |       1573319 |       2212217 |          431672 |     706.947 |       175.544 |
+| 1155 |    1057993 | Crime and Punishment    | Fyodor Dostoyevsky |       31233 |       1981 |          1866 |         4.21 | nan      | Paperback       |     472 | English    |          94 |        0 |          6160 |         711 |      16232 |        552376 |         65053 |          410809 |     459.778 |       219.988 |
 ```
 I cleared NaN values in order to make my dataset as robust as possible.  I chose logical values to replace NaNs
 for each feature.
-```jupyterpython
+```python
 # clear NaNs
 book_df.og_pub_date = book_df.og_pub_date.fillna(book_df.pub_date)
 book_df = book_df.dropna(subset=['pub_date'])
@@ -232,7 +235,7 @@ book_df.pages = book_df.pages.fillna(book_df.pages.mean())
 book_df.language = book_df.language.fillna('Unknown')
 book_df.info()
 ```
-```jupyterpython
+```python
 <class 'pandas.core.frame.DataFrame'>
 Int64Index: 1541 entries, 0 to 1800
 Data columns (total 21 columns):
@@ -260,10 +263,11 @@ avg_to_read      1541 non-null float64
 dtypes: float64(6), int64(10), object(5)
 memory usage: 264.9+ KB
 ```
-Finally, I started some of the feature engineering process by adding some attributes I thought would be useful, such as 
-age or scaling the amount of likes on book quotes in order to represent a quality factor of the quote interactions and 
-to dampen the effect of overly influential outliers in this feature.
-```jupyterpython
+Not too bad, I ended up with 1541 samples after cleaning the dataframe!  Finally, I started some of the feature engineering 
+process by adding some attributes I thought would be useful, such as age or scaling the amount of likes on book quotes 
+in order to represent a quality factor of the quote interactions and to dampen the effect of overly influential outliers 
+in this feature.
+```python
 # create age feature
 book_df['age'] = book_df.pub_date - book_df.og_pub_date
 
