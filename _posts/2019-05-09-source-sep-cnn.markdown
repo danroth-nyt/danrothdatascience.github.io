@@ -102,8 +102,8 @@ positioning for the dataset.
 
 ![figure1](../assets/img/posts/sourcesep/fig1.png)
 
-*<sub>Figure 1. “Cross” layout for binaural decoding.  “D”, “V”, “B”, and
-“O” correspond to drums, vocals, bass, and other respectively. [1]</sub>*
+<p style="text-align: center;"><sub>Figure 1. “Cross” layout for binaural decoding.  “D”, “V”, “B”, and
+“O” correspond to drums, vocals, bass, and other respectively. [1]</sub></p>
 
 The DSD100 was binaurally processed using Two!Ears’ binaural scene simulator and
 the SADIE head-related transfer function (HRTF) database in order to create a BDSD100
@@ -122,7 +122,7 @@ parameters of the DeepConvSep CNN illustrated by table 1.
 
 ![table1](../assets/img/posts/sourcesep/table1.png)
 
-*<sub> Table 1. CNN training parameters [1].</sub>*
+<p style="text-align: center;"><sub> Table 1. CNN training parameters [1].</sub></p>
 
 A Microsoft Azure cloud computer with a Tesla K80 graphics card and an Intel Xeon
 E5-2690 V3 CPU was used for model training.
@@ -143,8 +143,8 @@ the ears [6].
 
 ![figure2](../assets/img/posts/sourcesep/fig2.jpeg)
 
-*<sub>Figure 2. Listening test setup in University of Derby’s hemi-
-anechoic chamber.</sub>*
+<p style="text-align: center;"><sub>Figure 2. Listening test setup in University of Derby’s hemi-
+anechoic chamber.</sub></p>
 
 Tests were administered on a computer using a DragonFly Red DAC.  A Multiple
 Stimulus with Hidden Reference and Anchors (MUSHRA) test was designed using the Web
@@ -170,7 +170,7 @@ trained model.  A sample page of the test can be seen in Figure 3.
 
 ![figure3](../assets/img/posts/sourcesep/fig3.png)
 
-*<sub>Figure 3. Sample page of the MUSHRA listening test.</sub>*
+<p style="text-align: center;"><sub>Figure 3. Sample page of the MUSHRA listening test.</sub></p>
 
 ## Analysis of Results
 
@@ -191,14 +191,14 @@ evaluation.  Notched box plots were also produced from this analysis (see Figure
 
 ![figure4](../assets/img/posts/sourcesep/fig4.jpeg)
 
-*<sub>Figure 4. Notched box plot comparing separation ratings between
+<p style="text-align: center;"><sub>Figure 4. Notched box plot comparing separation ratings between
 differently trained CNN models.  “Ambi”, “anch”, “bina”, “ref”, and
-“ster” refer to ambisonic, anchor, binaural, reference, and stereo.</sub>*
+“ster” refer to ambisonic, anchor, binaural, reference, and stereo.</sub></p>
 
 ![figure5](../assets/img/posts/sourcesep/fig5.jpeg)
 
-*<sub>Figure 5. Notched box plot comparing stability ratings between
-differently trained CNN models.</sub>*
+<p style="text-align: center;"><sub>Figure 5. Notched box plot comparing stability ratings between
+differently trained CNN models.</sub></p>
 
 All of the source separation models scored poorly overall, with the stereo model
 featuring a slightly higher median and lower variance of opinion.  However, as all of the

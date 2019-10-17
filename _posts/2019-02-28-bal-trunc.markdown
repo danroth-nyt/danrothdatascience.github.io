@@ -89,8 +89,7 @@ method or any other singular value decomposition (SVD) analysis techniques (Gran
 
 ![fig3](../assets/img/posts/baltrunc/fig3.png)
 
-<p style="text-align: center;"><sub>Figure 1. System state-space model (Georgiou and Kyriakakis, 1999)</sub></p>
-*<sub>Figure 3. Block Hankel matrix of HRIR’s (Grantham et al., 2005)</sub>*
+<p style="text-align: center;"><sub>Figure 3. Block Hankel matrix of HRIR’s (Grantham et al., 2005)</sub></p>
 
 ### Prior Model Reduction Experiments and Analysis
 
