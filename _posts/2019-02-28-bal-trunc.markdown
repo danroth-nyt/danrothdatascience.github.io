@@ -1,0 +1,403 @@
+---
+layout: post
+title: "An Investigation Into Balanced Model Truncation for HRIR Filters"
+author: "Dan Roth"
+categories: research
+tags: [research, binaural]
+image: "binaural.jpg"
+---
+
+
+
+## Introduction
+
+Binaural rendering is a popular method for spatializing audio signals in order to create immersive
+sound environments such as those that would be employed in virtual reality.  The current paradigm
+for this technique uses the convolution of pairs of head-related impulse responses (HRIR’s) at given
+elevations and azimuths with input audio in order to effectively model the acoustics of a 3-
+dimensional space.  However, this current approach can be computationally costly, effectively
+requiring 2Mn multiplications and addition operations per channel, M being the number of virtual
+loudspeakers and n being the order of HRIR filter applied (Google, 2017).  Balanced model
+truncation is a potential solution that aims to reduce the computational load of HRIR convolution.
+The brief history of this process is explored and the model reduction is tested in Matlab in order to
+examine how well it approximates a set of MIT KEMAR HRIR filters at varying orders (MIT Media
+Laboratory, 2000).
+
+## Balanced Model Truncation
+
+### Overview
+
+Balanced model truncation (BMT) is a technique for reducing the complexity of a linear time-
+invariant system model.  The process creates a lower-order model that retains only the most critical
+components of a system through the analysis of its Hankel singular values (HSV’s).  HSV’s are
+mathematically defined as the square root of the eigenvalues of the product of the controllability
+Gramian and the observability Gramian, essentially defining the energy of a system.  When a state-
+space system contains these Gramians they are considered to be equal and diagonal in the matrix,
+creating a balanced system (Mackenzie et al., 1997).
+
+A balanced system then allows for a separation or ordering of the states contained within.  Each of
+these states is then assigned HSV’s and organized based on these evaluations.  The smaller a state’s
+HSV’s are compared to the largest HSV states, the more likely it is that the state will be truncated out
+of the system.  If the rejected systems have substantially smaller HSV’s than the truncated system,
+the resultant system should be an effective approximation of the original input; ultimately the
+potential for accurate truncation is dependent on the distribution of HSV’s in the original balanced
+system (Mackenzie et al., 1997).
+
+### HRIR's as State-Space Models
+
+HRIR filters are typically implemented as FIR filters, as the head-related finite impulse responses
+(FIR’s) are convoluted on a per-sample basis with input audio signals.  However, it has been found
+that even for different listeners and directions, HRIR’s are largely locally redundant (Adams, 2007).
+In fact, many experiments have shown that head-related transfer functions (HRTF’s) derived from
+HRIR’s can be significantly reduced and can undergo a great deal of distortion and smoothing and
+yet still retain effectiveness (Keyrouz et al., 2006).  A majority of the effective components from an
+HRTF system can be modelled using the first five principal components of the system, something
+that can usually be extracted using principle component analysis (PCA).  This does not always yield
+efficient filters however; a state-space approach can model HRTF’s at many directions
+simultaneously and thus exploit the redundancy of HRTF data (Adams, 2007).
+
+It may at first seem counter-intuitive to use the state-space format when the goal is to reduce the
+computational load of binaural processing; often state-space representations are considered to be
+computationally heavier than simpler filter representations due to the increased number of
+parameters that need to be stored in a state-space matrix.  However, the state-space representation
+can drastically reduce the number of parameters through several processing techniques (such as
+BMT) as well as featuring greater stability than infinite impulse response (IIR) filters due to the
+possible instabilities associated with the multitude of poles in an IIR system (Georgiou and
+Kyriakakis, 1999).
+
+![fig1](../assets/img/posts/baltrunc/fig1.png)
+
+<p style="text-align: center;"><sub>Figure 1. System state-space model (Georgiou and Kyriakakis, 1999)</sub></p>
+
+
+The state-space representation of a transfer function F(z) of order n can be represented as shown in
+the image to the right.  X is the n-dimensional state vector, u is the scalar system input, y is the
+output, and matrix A, vectors B and C, and scalar D define the system (Mackenzie et al., 1997).
+
+![fig2](../assets/img/posts/baltrunc/fig2.png)
+
+<p style="text-align: center;"><sub>Figure 2. Matrix-valued impulse response of HRIR’s for two ears
+(Grantham et al., 2005)</sub></p>
+
+These systems are typically well-suited for multi-input, multi-output (MIMO) systems, of which
+binaural audio processing is a fitting candidate.  For example, a state-space representation of HRIR’s
+that supports one matrix vector for each ear would appear as shown in Figure 2.
+
+This would then be transformed into a block Hankel matrix (Fig. 3) for processing via the BMT
+method or any other singular value decomposition (SVD) analysis techniques (Grantham et al.,
+2005).
+
+![fig3](../assets/img/posts/baltrunc/fig3.png)
+
+<p style="text-align: center;"><sub>Figure 1. System state-space model (Georgiou and Kyriakakis, 1999)</sub></p>
+*<sub>Figure 3. Block Hankel matrix of HRIR’s (Grantham et al., 2005)</sub>*
+
+### Prior Model Reduction Experiments and Analysis
+
+There have been several examinations into whether or not reduced order IIR filter approximations
+are preferable to direct FIR representations of HRTF’s.  In a test using the autoregressive moving
+average (ARMA) technique, an alternative reduction technique to BMT, it was found that IIR filter
+approximations featured a greater subjective detection probability and created a more effective
+spatialization of sound than the original FIR filters (Sandvad and Hammershoi, 1994).  This
+experiment also concluded that perceptual differences in filter order were more discernable when
+using noise samples rather than speech samples.  Not only are IIR filters potentially preferable to
+FIR, but they can also help to discern which features and contexts are the best for presenting a
+convincing spatialization of virtual sound.
+
+This experiment only went as far as to model IIR approximations of FIR filters that ranged from 50
+to 100 orders using the ARMA method.  BMT allows for much more dramatic model order
+reduction.  It was found that BMT had much lower spectral signal-to-error (SER) power ratios than
+other reduction techniques when attempting to create 10th order IIR approximations of a 128th order
+FIR HRTF filter set.  The BMT technique’s SER ranged from 24 to 36 dB and averaged to 29 dB
+while the alternative Prony’s and Yule-Walker methods, both of which are used in ARMA and other
+approaches, had respective average SER’s of 19.3 dB and 19 dB, 10 dB worse than BMT
+(Mackenzie et al., 1997).  This 13:1 order reduction also caused a 6:1 reduction in computational
+power required, representing the processing gains that can be realized through this approach.  The
+frequency response charts below demonstrate that the reduced 10th order filter approximations do a
+fairly good job of modelling low-mid frequencies, while not necessarily accurately depicting the
+high frequency responses of the FIR filters (Fig. 4).  However, this may still be acceptable as this
+high frequency content may be less essential to how we locate sound in a virtual space.  It has been
+previously shown that low to mid frequency information, below 8 kHz, is more essential than higher
+frequency information for simulating binaural spatial cues (Sandvad and Hammershoi, 1994).
+
+![fig4](../assets/img/baltrunc.png)
+
+<p style="text-align: center;"><sub>Figure 4. Comparison of 128th order FIR (left) and 10th order IIR (right) filter representations of HRTF’s (Mackenzie et al., 1997)</sub></p>
+
+## Experimentation
+
+### Methodology
+
+The MIT KEMAR HRTF database was used to source HRTF’s of various azimuths and elevations.
+A single pair of HRTF’s located at elevation 0, azimuth 10° were selected for model reduction.  Code
+was implemented in Matlab in order to prototype different orders of model reduction and how
+closely they would mirror the original HRIR filters.
+
+First the HRTF’s had to be converted to state-space models as they were originally in the form of
+FIR coefficients.  This was done via the imp2ss function provided by the Robust Control Toolbox
+offered by Matlab.  A separate set of state-space models were created using the minimum phase
+versions of the HRIR’s in order to observe the effect of pre-processing the HRIR’s before conversion
+to state-space.  It has been noted that it is preferable to conduct this minimum-phase pre-processing
+on the HRIR’s for conversion into state-space form as this greatly helps BMT to retain the magnitude
+response of the original filter (Buchanan and Newton, 2018).  BMT was then performed on the
+HRTF state-space models with a modular order control to allow for experimentation with different
+orders of reduction.  Impulses were then extracted from the reduced models using Matlab’s impulse()
+function and these were processed through a Fast Fourier Transform (FFT) in order to convert the
+reduced model impulses to the frequency domain.
+
+Once the reduced HRIR’s were in the frequency domain they were bode plotted with the original
+HRIR’s and the interaural level, time, and cross-correlation differences as well as the log spectral
+differences were calculated between the original and reduced models in order to generate accuracy
+statistics.  Interaural time differences (ITD) were measured using an onset level threshold detector
+and measuring the amount of time delay that occurred between the two ears’ HRIR onset times
+(Estrella, 2010).  Log spectral differences represent how well an original spectrum is reproduced by a
+newly processed spectrum and can provide insight into the changes between the original and reduced
+models in the frequency spectrum.  Interaural level, time, and cross-correlation differences are
+influential factors that inform our psychoacoustic system's localization cues and are how humans
+effectively spatialize sound.  It is demonstrative to observe if these cues are retained through this
+model reduction process.
+
+### Observations
+
+| | |
+|:-------------------------:|:-------------------------:|
+|![fig5.1](../assets/img/posts/baltrunc/fig5.1.jpeg) *<sub>Figure 5a. 30th order reduction, non-minimum phase HRTF</sub>* |  ![fig5.2](../assets/img/posts/baltrunc/fig5.2.jpeg) *<sub>Figure 5b. 20th order reduction, non-minimum phase HRTF</sub>*
+|![fig5.3](../assets/img/posts/baltrunc/fig5.3.jpeg) *<sub>Figure 5c. 15th order reduction, non-minimum phase HRTF</sub>* |  ![fig5.4](../assets/img/posts/baltrunc/fig5.4.jpeg) *<sub>Figure 5d. 10th order reduction, non-minimum phase HRTF</sub>*
+
+The BMT was successful in its basic aims to present modular, reduced order representations of
+HRTF filters.  The reduced filters were generally less accurate as the filter order decreased, but they
+were only significantly inaccurate below the 15th order.  Phase response changes seem to be
+asymmetric, at times affecting the left HRTF but not the right HRTF or vice-versa.  However, at the
+10th order the phase information loses a significant amount of correlation with the original phase
+response.  The phase response is also highly distorted in both original and reduced states and this is
+largely due to the process of converting non-minimum phase impulses to state-space form as the
+phase information will not be accurately retained through this transition.
+
+The reduced models that used minimum-phase inputs had much better phase and frequency response
+performance overall as shown below (Fig. 6).  There was consistent phase error in the left channel
+except at the 15th order; it appears that the model reduction shifted the phase 360° in these instances,
+but this could be considered negligible.
+
+| | |
+|:-------------------------:|:-------------------------:|
+|![fig6.1](../assets/img/posts/baltrunc/6.1.jpeg) *<sub>Figure 6a. 30th order reduction, minimum phase HRTF</sub>* |  ![fig6.2](../assets/img/posts/baltrunc/6.2.jpeg) *<sub>Figure 6b. 20th order reduction, minimum phase HRTF</sub>*
+|![fig6.3](../assets/img/posts/baltrunc/6.3.jpeg) *<sub>Figure 6c. 15th order reduction, minimum phase HRTF</sub>* |  ![fig6.4](../assets/img/posts/baltrunc/6.4.jpeg) *<sub>Figure 6d. 10th order reduction, minimum phase HRTF</sub>*
+
+Figures 7 and 8 demonstrate some of the non-linearities that occurred with the 20th order reduced
+model.  15th order approximations of the original filters outperformed the 20th order filters in
+retaining the original ITD’s of the HRTF’s, albeit by an acceptable amount as the minimum phase
+HRIR's had already greatly improved overall performance.  The relationship between order and
+accuracy appears to resemble a logarithmic response otherwise, demonstrating that fairly accurate
+results can be achieved at around a 4:1 reduction of filter order using non-minimum phase HRTF’s as
+the 20th order model is acceptably accurate for approximating the original 86th order HRIR filters.
+
+| | |
+|:-------------------------:|:-------------------------:|
+|![fig6.1](../assets/img/posts/baltrunc/7.jpeg) *<sub>Figure 7. Comparison of non-minimum phase order reduced filters’ accuracy statistics quantified by binaural performance differences with original filters</sub>* |  ![fig6.2](../assets/img/posts/baltrunc/8.jpeg) *<sub>Figure 8. Comparison of minimum phase order reduced filters’ accuracy statistics quantified by binaural performance differences with original filters</sub>*
+
+Overall interaural level differences (ILD) and ITD are greatly improved using minimum-phase
+HRIR's as inputs, however ILD showed more improvement than ITD.  The log spectral difference is
+overall higher than in the non-minimum phase inputs and it says constant, perhaps indicating that the
+change in phase information remains a consistent difference between the reduced output and original
+HRIR.  The original interaural cross-correlations are heavily altered and show high variance from the
+original HRTF’s (note that the plot must use a very different scale in order to portray relevant
+information).  Interestingly, the minimum phase HRIR's displayed even greater non-linearities.  The
+20th order reduction performs worse than the 15th order reduction in all categories and the 30th
+order reduction has slightly worse cross-correlation accuracy than the 10th order reduction.  These
+charts appear to indicate that there is an ideal range for order reduction and that the 15th order
+reduction performed best in this case.
+
+## Conclusion
+
+The ideal order reduction for this model was a minimum-phase 15th order approximation as it
+featured the best accuracy statistics and represents a 5.73:1 reduction in order which would translate
+to noticeable computational savings.  Minimum-phase HRTF inputs had increased accuracy overall
+compared to non-minimum phase inputs, although it was interesting to note that the minimum-phase
+reduced models heavily deviated from the original filters' interaural cross-correlation.  The non-
+linear aspects of the model truncation process, as illustrated by the 20th order model's slightly poorer
+performance, requires further inspection.  Perhaps there are certain reduction ratios that are less
+effective than others.
+
+Lower orders could also be acceptable as the loss in high frequency accuracy in these reduced
+models could be a non-factor in binaural audio perception.  Non-minimum phase inputs can be
+considered if the model reduction is gentle as in the 30th order approximation (~2.86:1 reduction
+ratio), but this does not guarantee accurate phase response.  Further experimentation with perceptual
+hearing tests using these filters would be informative and could confirm how much model reduction
+is perceptually acceptable when using BMT for binaural audio applications.
+
+## References
+
+Adams, Norman H. (2007) State-Space Architectures for Binaural Environment Modeling. Available
+at: http://www.eecs.umich.edu/techreports/systems/cspl/cspl-380.pdf (Accessed: 24 February 2019).
+
+Buchanan, C. G. and Newton, M. J. (2018) ‘Dynamic Balanced Model Truncation of the Spherical
+Transfer Function for Use in Structural HRTF Models’, in. Audio Engineering Society Conference:
+2018 AES International Conference on Audio for Virtual and Augmented Reality, Audio Engineering
+Society. Available at: http://www.aes.org/e-lib/browse.cfm?elib=19673 (Accessed: 14 February
+2019).
+
+Estrella, J. (2010) On the Extraction of Interaural Time Differences from Binaural Room Impulse
+Responses, Available at: https://www2.ak.tu-berlin.de/~akgroup/ak_pub/abschlussarbeiten/2011/
+EstrellaJorgos_StudA.pdf (Accessed: 26 February 2019).
+
+Google (2017) Signal processing methods and systems for rendering audio on virtual loudspeaker
+arrays.  UK Intellectual Property Office Patent no. GB2549826.  Available at: https://
+patentimages.storage.googleapis.com/92/31/03/e7076c6f5fdd86/GB2549826A.pdf (Accessed: 20
+February 2019).
+
+Grantham, D. W. et al. (2005) ‘Reduced order modeling of head related impulse responses for virtual
+acoustic displays’, The Journal of the Acoustical Society of America, 117(5), pp. 3116–3125. doi:
+10.1121/1.1882944.
+
+Keyrouz, F., Naous, Y. and Diepold, K. (2006) ‘A New Method for Binaural 3-D Localization Based
+on Hrtfs’, in 2006 IEEE International Conference on Acoustics Speech and Signal Processing
+Proceedings. 2006 IEEE International Conference on Acoustics Speech and Signal Processing
+Proceedings, pp. V–V. doi: 10.1109/ICASSP.2006.1661282.
+
+Mackenzie, J. et al. (1997) ‘Low-order modeling of head-related transfer functions using balanced
+model truncation’, IEEE Signal Processing Letters, 4(2), pp. 39–41. doi: 10.1109/97.554467.
+
+McCaslin, S. (1998) Minimum Phase Processing Code (Version 1.0) [Matlab Code] Available at:
+http://signal.ece.utexas.edu/software/minphase/mccaslin/ (Accessed: 26 February 2019).
+
+MIT Media Laboratory (2000) 'HRTF Measurements of a KEMAR Dummy-Head Microphone'
+Available at: http://sound.media.mit.edu/resources/KEMAR.html (Accessed 26 February 2019).
+
+Sandvad, J. and Hammershoi, D. (1994) ‘Binaural Auralization, Comparison of FIR and IIR Filter
+Representation of HIRs’, in. Audio Engineering Society Convention 96, Audio Engineering Society.
+Available at: http://www.aes.org/e-lib/browse.cfm?elib=6370 (Accessed: 14 February 2019).
+
+Zavarehei, E. (2006) Log Spectral Distance Code (Version 1.0) [Matlab Code] Available at: https://
+uk.mathworks.com/matlabcentral/fileexchange/9998-log-spectral-distance (Accessed: 26 February
+2019).
+
+## Matlab Code
+
+```
+%% MIT KEMAR HRTF data import
+pos = 10; %angle in degrees rounded to nearest 5 degrees
+%load HRTF data   
+if(pos<10)       
+     f=['H0e00',int2str(pos),'a.wav'];    
+elseif(pos<100)
+     f=['H0e0',int2str(pos),'a.wav'];   
+else
+     f=['H0e',int2str(pos),'a.wav'];   
+end
+c = audioread(f);
+%you can leave it in f, or copy it elsewhere
+HRTF.l = c(:,2);
+HRTF.r = c(:,1);
+
+%load audio for testing
+[dry, Fs] = audioread('dry.wav');
+sampletime = length(dry);
+
+%convolve with original MIT HRTF's
+wet(:,2) = filter(HRTF.l,1,dry);
+wet(:,1) = filter(HRTF.r,1,dry);
+
+%create state space models from impulses
+min_phase = false; %minimum phase switch
+HRTF_minphaseL = minphase(HRTF.l);
+HRTF_minphaseR = minphase(HRTF.r);
+if(min_phase == false)
+    HRTFss_L = imp2ss(HRTF.l);
+    HRTFss_R = imp2ss(HRTF.r);
+elseif(min_phase == true)
+    HRTFss_L = imp2ss(HRTF_minphaseL);
+    HRTFss_R = imp2ss(HRTF_minphaseR);
+end
+    
+%% Perform balanced truncation on LTI system
+Order = 10; %target filter order
+
+%Define System to reduce
+%left channel
+SystemL = HRTFss_L; 
+%right channel
+SystemR = HRTFss_R;
+%Create option set for balred command
+Options = balredOptions();
+%Compute reduced order approximation
+HRTFreduced_L = balred(SystemL,Order,Options);
+HRTFreduced_R = balred(SystemR,Order,Options);
+
+%extract impulses from reduced models
+HRIR_reducedL = impulse(HRTFreduced_L, sampletime);
+HRIR_reducedR = impulse(HRTFreduced_R, sampletime);
+
+%convolve audio with reduced IR's
+wetreduced(:,2) = conv(dry,HRIR_reducedL);
+wetreduced(:,1) = conv(dry,HRIR_reducedR);
+
+%play audio for comparison
+dryplayer = audioplayer(dry,Fs);
+playblocking(dryplayer); %original audio
+wetplayer = audioplayer(wet,Fs);
+playblocking(wetplayer); %audio with original HRTF's
+wetreducedplayer = audioplayer(wetreduced,Fs);
+play(wetreducedplayer); %audio with reduced HRTF's
+
+%write audio to file
+if min_phase == true
+    label = 'minphase';
+else
+    label = 'nonminphase';
+end
+filename = 'MITKEMAR_binaural.wav';
+filename_reduced = ['ReducedHRTFbinaural_', int2str(Order),'thorder_',label,'.wav'];
+audiowrite(filename, wet, Fs);
+audiowrite(filename_reduced, wetreduced, Fs);
+
+%FFT impulses
+fft_size = 4096;
+HRTF_fftL = fft(HRTF.l, fft_size);
+HRTF_fftR = fft(HRTF.r, fft_size);
+HRTFreduced_fftL = fft(HRIR_reducedL, fft_size);
+HRTFreduced_fftR = fft(HRIR_reducedR, fft_size);
+
+%% Analysis
+%plot
+figure(1);
+subplot(2,1,1);
+bodeplot(SystemL,HRTFreduced_L)
+title('Left HRTF Comparison')
+xlim([10^-2.5 3])
+legend('Original HRTF Response','Reduced HRTF Response')
+legend('boxoff')
+
+subplot(2,1,2);
+bodeplot(SystemR,HRTFreduced_R)
+title('Right HRTF Comparison')
+xlim([10^-2.5 3])
+legend('Original HRTF Response','Reduced HRTF Response')
+legend('boxoff')
+
+%calculate log spectral distance
+sampleRate = 48000;
+LSD_average = (LogSpectralDistance(HRTF_fftL, HRTFreduced_fftL, sampleRate) + LogSpectralDistance(HRTF_fftR, HRTFreduced_fftR, sampleRate)) / 2;
+LSDformatSpec = "The Log Spectral Distortion is: %f dB";
+LSD = sprintf(LSDformatSpec, LSD_average)
+
+%ILD differences
+ILD_original = mean((mag2db(abs(HRTF_fftL)) - mag2db(abs(HRTF_fftR))));
+ILD_reduced = mean((mag2db(abs(HRTFreduced_fftL)) - mag2db(abs(HRTFreduced_fftR))));
+ILD_difference = abs(ILD_original - ILD_reduced);
+ILDformatSpec = "The ILD difference is: %f dB";
+ILD = sprintf(ILDformatSpec, ILD_difference)
+
+%ITD differences
+ITD_original = OnSetITD(HRTF_fftL, HRTF_fftR, -3, sampleRate, 1);
+ITD_reduced = OnSetITD(HRTFreduced_fftL, HRTFreduced_fftR, -3, sampleRate, 1);
+ITD_difference = abs(ITD_original - ITD_reduced);
+ITDformatSpec = "The ITD difference is: %f";
+ITD = sprintf(ITDformatSpec, ITD_difference)
+
+%cross-correlation differences
+crosscorr_original = xcorr(HRTF_fftL, HRTF_fftR);
+crosscorr_reduced = xcorr(HRTFreduced_fftL, HRTFreduced_fftR);
+crosscorr_diff = abs(mean(crosscorr_original - crosscorr_reduced));
+xCorrformatSpec = "The Cross Correlation difference is: %f";
+xCorr = sprintf(xCorrformatSpec, crosscorr_diff)
+```

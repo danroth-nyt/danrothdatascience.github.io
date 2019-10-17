@@ -1,22 +1,17 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-    {% include head.html %}
-    <body id="page-top" class="index">
-    {% include nav.html %}
-    {% include header.html %}
-    {% include portfolio_grid.html %}
-    {% include about.html %}
 
-    {% if site.contact == "static" %}
-    {% include contact_static.html %}
-    {% elsif site.contact == "disqus" %}
-    {% include contact_disqus.html %}
-    {% else %}
-    {% include contact.html %}
-    {% endif %}
+{% include head.html %}
 
-    {% include footer.html %}
-    {% include modals.html %}
-    {% include js.html %}
-    </body>
+<body>
+
+<div class="container">
+  {% include header.html %}
+  <div class="posts-wrapper">
+    {{ content }}
+  </div>
+  {% include footer.html %}
+</div>
+
+</body>
 </html>
