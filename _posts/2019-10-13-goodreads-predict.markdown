@@ -16,7 +16,7 @@ book's Goodreads page.
 
 ![sample goodreads page](../assets/img/posts/goodreads/gr_sample_page.png "A Tale of Two Cities on Goodreads")
 
-*<sub>A sample page from Goodreads with the "want to read" button highlighted in red.</sub>*
+<p style="text-align: center;"><sub>A sample page from Goodreads with the "want to read" button highlighted in red.</sub></p>
 
 ## Web Scraping Using BeautifulSoup4 and Selenium
 
@@ -360,8 +360,8 @@ plt.show()
 ```
 ![linear Q-Q plot](../assets/img/posts/goodreads/linearQQ.png)
 
-*<sub>The topmost points on this plot correspond with the top performing books previously explored above, such as a Japanese 
-version of George Orwell's 1984 and A Tale of Two Cities by Charles Dickens.</sub>*
+<p style="text-align: center;"><sub>The topmost points on this plot correspond with the top performing books previously explored above, such as a Japanese 
+version of George Orwell's 1984 and A Tale of Two Cities by Charles Dickens.</sub></p>
 
 The residual plot revealed some very strong bias as the model was underfitting the larger predicted values in the data; the 
 Q-Q plot confirmed this as the line of best fit was clearly failing to approximate what was clearly an exponential phenomenon.
