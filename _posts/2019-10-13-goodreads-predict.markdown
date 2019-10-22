@@ -4,7 +4,7 @@ title: "What are the best predictors for interest in a book on Goodreads?"
 author: "Dan Roth"
 categories: datascience
 tags: [linear-regression, web-scraping, data-science]
-image: "reading-outdoor.jpg"
+image: "bookstack.jpeg"
 ---
 
 [Goodreads.com](http://goodreads.com) is essentially a social networking website for book lovers; the site introduces 
