@@ -49,9 +49,9 @@ options (detailed below).  Most importantly, it not only yields the best perform
  interpretability (hence the term “interpretable” in the Auto_ViML name).  
  
 I decided to give Auto_ViML a spin with a few famous data sets. To get started with Auto_ViML is as easy as 1-2-3:
-* You need to  install Auto_ViML through “pip install”
-* You need to load your data set into a dataframe and split it into train and test.
-* You need to call Auto_ViML with a one-line function call
+* Install Auto_ViML through “pip install”
+* Load your data set into a dataframe and split it into train and test
+* Call Auto_ViML with a one-line function call
 
 I have attached the Jupyter Notebook for my experiment [here](https://github.com/DanRothDataScience/autoviml_test/blob/master/AutoVIML_test.ipynb).
 
@@ -59,8 +59,8 @@ The benefits of the Auto_ViML workflow were effectively demonstrated by testing 
 ```python
 model_home, features_home, trainm_home, testm_home = Auto_ViML(train, 'SalePrice', test, verbose=2, scoring_parameter='r2')
 ```
-The regression analysis provided strong insights into the most effective way to approach the housing data.  
-A line of best fit was created by having Auto_ViML create polynomial terms, including interactions.  This built-in 
+The regression analysis provided strong insights into the most effective way to approach the housing data. A line of 
+best fit was created by having Auto_ViML create polynomial terms, including interactions.  This built-in 
 feature engineering decreased the RMSE from $25640.78 to $23255.65, an observable improvement in terms of predicting 
 housing prices.  The final model had an R<sup>2</sup> of .91 upon external evaluation.
 
@@ -109,7 +109,8 @@ In order to predict the wide variety of crimes present in the London Police Reco
 use Auto_ViML’s imbalanced flag for this task.  The large number of data observations also lends itself to experimentation
  with Auto_ViML’s model stacking functionality, enabled as below:
 ```python
-model_crime, features_crime, trainm_crime, testm_crime = Auto_ViML(train, 'Crime type', test, verbose=2, scoring_parameter='weighted_f1', Imbalanced_Flag=True, Stacking_Flag=True)
+model_crime, features_crime, trainm_crime, testm_crime = Auto_ViML(train, 'Crime type', test, verbose=2, 
+scoring_parameter='weighted_f1', Imbalanced_Flag=True, Stacking_Flag=True)
 ```
 Running two tests with and without stacking reveal that model stacking delivers stronger macro-average F1 scores 
 (an improvement from 0.06 to 0.31) as well as stronger ROC-AUC scores, implying the model confidence has improved.  
