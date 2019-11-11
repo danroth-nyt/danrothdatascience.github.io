@@ -74,12 +74,12 @@
 }
 .related-thumbnail {
   position: relative;
-  width: 600px;
+  width: 800px;
   height: 200px;
   overflow: hidden;
 }
 .related img {
-  position: absolute;
+  position: relative;
   left: 50%;
   top: 50%;
   height: auto;
@@ -89,8 +89,11 @@
           transform: translate(-50%,-50%);
 }
 .related-title {
+  position: relative;
   float: right;
+  left: 0%;
   padding-bottom: .5rem;
+  width: 600px;
   font-family: $base-font-family;
 }
 @media (max-width: $container-width) {
