@@ -1,0 +1,162 @@
+---
+layout: post
+title: "Why AutoML is An Essential New Tool For Data Scientists"
+author: "Dan Roth"
+categories: datascience
+tags: [automl,data-science,regression,classification]
+image: "automl.jpeg"
+---
+Machine learning (ML) is the current paradigm for modeling statistical phenomena by harnessing algorithms that exploit 
+computer intelligence.  It is common place to build ML models that predict housing prices, aggregate users by their 
+potential marketing interests, and use image recognition techniques to identify brain tumors.  However, up until now 
+these models have required scrupulous trial and error in order to optimize model performance on unseen data.  
+
+The field of automated machine learning (AutoML) aims to curb the resources required (time and expertise) by offering 
+well-designed pipelines that handle data preprocessing, feature selection, and model creation and evaluation.  While 
+AutoML may initially only appeal to enterprises that want to harness the power of ML without consuming precious budgets 
+and hiring skilled data practitioners, it also contains very strong promise to become an invaluable tool for the 
+experienced data scientist.  
+
+Data scientists often have trouble producing effective models within crunched timelines due to the current fallacies of 
+machine learning tools.  They struggle with inflexible frameworks, lack of reproducibility across platforms, obstacles 
+to collaboration, and software tools that are not yet fully developed.  There are many different AutoML tools that are 
+currently on offer, but they are not without their own disadvantages.  Oftentimes they confine users to a rigid workflow
+ and can act as black boxes; they produce impressive results but with little interpretability and reproducibility.  There 
+ is little explanation offered in regards to how the auto-modeling software actually arrived at the best model or 
+ why it chose to keep certain features over others.  Some data scientists also feel it is a point of pride to avoid such
+  tools.  After all, what would justify a data scientist’s existence if their entire workflow can be replaced with an 
+  automated tool?
+  
+The field of AutoML is very crowded with many choices of AutoML ranging from the free open source tools such as WEKA or 
+Auto-Sklearn to the most expensive platforms such as Data Robot, H2O Driverless AI and Dataiku. While there are many 
+articles on the web about these tools, I thought I would try out a latest entrant in the field based on a recent 
+presentation I attended by its designer and author.      
+ 
+The tool is known as “Auto_ViML” or “Automatic Variant Interpretable Machine Learning”  (pronounced “Auto_Vimal”) which 
+is a library developed that serves as a prime example of how a full featured yet free AutoML pipeline can effectively 
+contribute to contemporary data workflows.  
+
+AutoViML is input agnostic, which enables it to accept any dataset that is in the form of a pandas dataframe.  It 
+performs category feature transformation and simple data cleaning steps such as identifying missing values as “missing”
+ so that they can be best left to the model to decide how to use them.  
+ 
+One of the library’s unique differentiators is that it performs feature reduction (or feature selection) automatically 
+in order to produce the simplest model which in this case is the model with the least number of features needed to 
+produce reasonably high performance. I found that models produced by AutoML automatically reduced multicollinearity in 
+the selected feature set and produced a well-performing model by iterating through a series of over 15 different ML 
+options (detailed below).  Most importantly, it not only yields the best performing model (based on your scoring metric)
+ but it also provides a detailed yet verbose output that allows for a great deal of understanding and model 
+ interpretability (hence the term “interpretable” in the Auto_ViML name).  
+ 
+I decided to give Auto_ViML a spin with a few famous data sets. To get started with Auto_ViML is as easy as 1-2-3:
+* You need to  install Auto_ViML through “pip install”
+* You need to load your data set into a dataframe and split it into train and test.
+* You need to call Auto_ViML with a one-line function call
+
+I have attached the Jupyter Notebook for my experiment [here](https://github.com/DanRothDataScience/autoviml_test/blob/master/AutoVIML_test.ipynb).
+
+The benefits of the Auto_ViML workflow were effectively demonstrated by testing a variety of different datasets with Auto_ViML.  The automodeller first created a very effective linear regression model for predicting the sale price of a house using the Ames Housing Data Set.  Data was split into train and test sets and provided with a target variable as an argument to Auto_ViML.  All of this can be done in one line:
+```python
+model_home, features_home, trainm_home, testm_home = Auto_ViML(train, 'SalePrice', test, verbose=2, scoring_parameter='r2')
+```
+The regression analysis provided strong insights into the most effective way to approach the housing data.  
+A line of best fit was created by having Auto_ViML create polynomial terms, including interactions.  This built-in 
+feature engineering decreased the RMSE from $25640.78 to $23255.65, an observable improvement in terms of predicting 
+housing prices.  The final model had an R<sup>2</sup> of .91 upon external evaluation.
+
+![amesline](../assets/img/posts/autoviml/ames_line.png)
+
+The library also yielded a plot of feature importances, which indicated that the newly added total basement square 
+footage and ground living area square footage polynomial transforms had strong exponential relationships with the 
+target variable.  The final model employed Lasso regularization and an alpha of 79.  It is insightful to be able to 
+leave the Auto_ViML process with an understanding of which feature transformations would be most pertinent, which 
+features were least useful in modeling the target variable, and the type and strength of model regularization that 
+would suit this problem best.
+
+![amesshap](../assets/img/posts/autoviml/ames_shap2.png)
+
+<p style="text-align: center;"><sub><i>Auto_ViML smartly incorporates SHAP feature importance plots when verbose = 2 and the Boosting_Flag = True
+in order to employ an XGBoost model.</i></sub></p>
+
+Auto_ViML handled a binary classification problem with similar insightfulness.  It found that a heavily regularized 
+Logistic Regression model (with C = 20) was able to best predict an employee’s probability of attrition when using the 
+IBM Watson HR Data Set.  The automodeler intuitively knew to prioritize the recall of the positive class (an employee 
+choosing to leave the company), a fitting optimization for this particular problem.  Auto_ViML calculated an optimal 
+threshold of 0.49 for an F1 score of 0.94, arriving at the conclusion that a single model performed very well for this task.
+
+![ibmeval](../assets/img/posts/autoviml/ibm_eval.png)  
+
+The problem of employee attrition is one that does not just expect strong predictive accuracy, but also an ability to 
+understand the underlying dynamics of employee churn.  AutoViML’s feature importance chart accurately pinpoints some of 
+the more predictive factors in identifying employee attrition such as an employee’s level of job involvement and whether
+ or not they have to work overtime or have stock options.  In a data set with so many built-in features, this Auto_ViML pipeline also pinpointed
+  features that were too highly correlated to other features and thus redundant.  Auto_ViML found that an employee’s total
+   working years, years in their current job role, years with their current manager, and their annual salary were not 
+   particularly helpful features.  Some of these observations were surprising, as a data scientist might assume they 
+   should highlight these feature attributes when modeling employee attrition.  Insights from AutoML can help to guide 
+   the data science workflow, successfully steering the modeling pipeline clear of unnecessary features that could be 
+   red herrings in the feature engineering process.  
+
+![ibmshap](../assets/img/posts/autoviml/ibm_shap.png)
+
+Large datasets that consist of observations in the order of millions can often present a daunting challenge for data 
+scientists.  These data stores force data practitioners to deal with wrangling and cleaning data en masse while also 
+attempting to uncover underlying trends and predictive factors nested in the data. In order to observe Auto_ViML’s 
+capabilities with large data sets, I chose the London Crime Records data set from Kaggle with 1m+ rows and 7 features 
+for my next test.  
+
+In order to predict the wide variety of crimes present in the London Police Records dataset it is useful to be able to 
+use Auto_ViML’s imbalanced flag for this task.  The large number of data observations also lends itself to experimentation
+ with Auto_ViML’s model stacking functionality, enabled as below:
+```python
+model_crime, features_crime, trainm_crime, testm_crime = Auto_ViML(train, 'Crime type', test, verbose=2, scoring_parameter='weighted_f1', Imbalanced_Flag=True, Stacking_Flag=True)
+```
+Running two tests with and without stacking reveal that model stacking delivers stronger macro-average F1 scores 
+(an improvement from 0.06 to 0.31) as well as stronger ROC-AUC scores, implying the model confidence has improved.  
+
+A comparison of the ROC curve plots confirms this improvement.
+
+![londonroc](../assets/img/posts/autoviml/london_roc.png)
+![londonroc2](../assets/img/posts/autoviml/london_roc2.png)
+
+<p style="text-align: center;"><sub><i>ROC curves indicate that the model has greater confidence after employing model stacking (bottom) as opposed to the 
+single model output (top).</i></sub></p>
+
+Sadly, model stacking leads to a loss of interpretability; the original single model experiment explains that the month 
+and location of a crime are the two most important features for predicting the type of crime, but the stacking output 
+simply attributes a decision tree output as the most important feature.  This indicates that model stacking is an 
+appropriate solution for this problem in terms of performance, but it is still useful to gain multiple perspectives by 
+changing the properties of Auto_ViML’s tests.
+
+![londonimp](../assets/img/posts/autoviml/london_imp.png)
+<p style="text-align: center;"><sub><i>Auto_ViML's default feature importance chart without SHAP.</i></sub></p>
+
+AutoML is not only able to create quick and accurate models on the fly, but if a library offers appropriately verbose 
+output, then great insights can be gathered that can expedite the process of understanding a problem.  Auto_ViML’s 
+interpretability is one of its primary strengths; this is in stark contrast to the current trend towards using deep 
+neural networks.  Cynthia Rudin (2019) exclaims: “The belief that there is always a trade-off between accuracy and 
+interpretability has led many researchers to forgo the attempt to produce an interpretable model. This problem is 
+compounded by the fact that researchers are now trained in deep learning, but not in interpretable machine learning. 
+Worse, toolkits of machine learning algorithms offer little in the way of useful interfaces for interpretable machine 
+learning methods.”  Libraries like Auto_ViML can buck the trend of black-box automated tools and make a strong case for 
+transparent automatic modeling.    
+
+AutoML can point data scientists toward the correct models and regularization tools for a specified data pipeline.  The 
+automated process is capable of filtering out features that can mislead a model and determining the effectiveness of 
+polynomial feature transforms on the fly.  Oftentimes a data scientist’s prior bias can skew the results of the modeling 
+process and potentially lead a data practitioner to a dead end.  It is thus invaluable to be able to throw a data set 
+into an AutoML pipeline in order to gain completely unbiased insights into a problem.  
+
+While data scientists may still ultimately seek to manually tweak and evaluate their own models, AutoML is nonetheless 
+an indispensable tool for gathering initial insights into a problem and gaining an objective perspective on feature and 
+target variable relationships.  Many data scientists are hesitant to use AutoML tools for now, but it would not be 
+surprising to see these assets being incorporated into exploratory data analysis or initial model experimentation in the 
+foreseeable future.  It is best to endorse AutoML processes that reintroduce the paradigm of decipherable machine 
+learning models over quick black-box solutions.  These AutoML tools can then effectively become the equivalent of having 
+another data scientist on the team: one that already has powerful insights and unique solutions for the problem at hand. 
+
+You can access the github repository for Auto_ViML [here](https://github.com/AutoViML/Auto_ViML).   
+
+A special thanks goes out to Ram Seshadri for his support and guidance on the Auto_ViML data experiments.
+
+
