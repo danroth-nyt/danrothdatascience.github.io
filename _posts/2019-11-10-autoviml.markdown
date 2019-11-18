@@ -11,7 +11,7 @@ computer intelligence.  It is common place to build ML models that predict housi
 potential marketing interests, and use image recognition techniques to identify brain tumors.  However, up until now 
 these models have required scrupulous trial and error in order to optimize model performance on unseen data.  
 
-The field of automated machine learning (AutoML) aims to curb the resources required (time and expertise) by offering 
+The advent of automated machine learning (AutoML) aims to curb the resources required (time and expertise) by offering 
 well-designed pipelines that handle data preprocessing, feature selection, and model creation and evaluation.  While 
 AutoML may initially only appeal to enterprises that want to harness the power of ML without consuming precious budgets 
 and hiring skilled data practitioners, it also contains very strong promise to become an invaluable tool for the 
@@ -30,7 +30,9 @@ currently on offer, but they are not without their own disadvantages.  Oftentime
 The field of AutoML is very crowded with many choices of AutoML ranging from the free open source tools such as WEKA or 
 Auto-Sklearn to the most expensive platforms such as Data Robot, H2O Driverless AI and Dataiku. While there are many 
 articles on the web about these tools, I thought I would try out a latest entrant in the field based on a recent 
-presentation I attended by its designer and author.      
+presentation I attended by its designer and author. 
+
+### Enter Auto_ViML     
  
 The tool is known as “Auto_ViML” or “Automatic Variant Interpretable Machine Learning”  (pronounced “Auto_Vimal”) which 
 is a library developed that serves as a prime example of how a full featured yet free AutoML pipeline can effectively 
@@ -55,6 +57,8 @@ I decided to give Auto_ViML a spin with a few famous data sets. To get started w
 
 I have attached the Jupyter Notebook for my experiment [here](https://github.com/DanRothDataScience/autoviml_test/blob/master/AutoVIML_test.ipynb).
 
+### Linear Regression for the Ames Housing Dataset
+
 The benefits of the Auto_ViML workflow were effectively demonstrated by testing a variety of different datasets with Auto_ViML.  The automodeller first created a very effective linear regression model for predicting the sale price of a house using the Ames Housing Data Set.  Data was split into train and test sets and provided with a target variable as an argument to Auto_ViML.  All of this can be done in one line:
 ```python
 model_home, features_home, trainm_home, testm_home = Auto_ViML(train, 'SalePrice', test, verbose=2, scoring_parameter='r2')
@@ -78,6 +82,8 @@ would suit this problem best.
 <p style="text-align: center;"><sub><i>Auto_ViML smartly incorporates SHAP feature importance plots when verbose = 2 and the Boosting_Flag = True
 in order to employ an XGBoost model.</i></sub></p>
 
+### Classifying Employee Attrition
+
 Auto_ViML handled a binary classification problem with similar insightfulness.  It found that a heavily regularized 
 Logistic Regression model (with C = 20) was able to best predict an employee’s probability of attrition when using the 
 IBM Watson HR Data Set.  The automodeler intuitively knew to prioritize the recall of the positive class (an employee 
@@ -98,6 +104,8 @@ the more predictive factors in identifying employee attrition such as an employe
    red herrings in the feature engineering process.  
 
 ![ibmshap](../assets/img/posts/autoviml/ibm_shap.png)
+
+### Crime Prediction With Auto_ViML
 
 Large datasets that consist of observations in the order of millions can often present a daunting challenge for data 
 scientists.  These data stores force data practitioners to deal with wrangling and cleaning data en masse while also 
@@ -131,6 +139,8 @@ changing the properties of Auto_ViML’s tests.
 
 ![londonimp](../assets/img/posts/autoviml/london_imp.png)
 <p style="text-align: center;"><sub><i>Auto_ViML's default feature importance chart without SHAP.</i></sub></p>
+
+### Concluding Remarks
 
 AutoML is not only able to create quick and accurate models on the fly, but if a library offers appropriately verbose 
 output, then great insights can be gathered that can expedite the process of understanding a problem.  Auto_ViML’s 
