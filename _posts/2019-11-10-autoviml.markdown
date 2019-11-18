@@ -160,4 +160,9 @@ You can access the github repository for Auto_ViML [here](https://github.com/Aut
 
 A special thanks goes out to Ram Seshadri for his support and guidance on the Auto_ViML data experiments.
 
+<b><i>Bibliography</i></b>
+
+<i>C. Rudin, “Stop Explaining Black Box Machine Learning Models for High Stakes Decisions and Use Interpretable Models Instead,” arXiv:1811.10154 [cs, stat], Sep. 2019.</i>
+
+
 

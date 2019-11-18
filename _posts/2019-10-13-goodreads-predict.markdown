@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "What are the best predictors for interest in a book on Goodreads?"
+title: "What Are the Best Predictors For Interest In A Book On Goodreads?"
 author: "Dan Roth"
 categories: datascience
 tags: [regression, web-scraping, data-science]
