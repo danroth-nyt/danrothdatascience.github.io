@@ -192,7 +192,7 @@ communicating the data with a well informed analysis.  It is surprising that aut
 sparse given its many conceivable uses as an objective and practical tool, but AutoViz thankfully fulfills this role to 
 great effect.  Now let&#39;s get some visualizations going!
 
-You can access [this jupyter notebook](https://github.com/DanRothDataScience/autoviz\_test/blob/master/AutoViz\_test.ipynb) 
+You can access [this jupyter notebook](https://github.com/DanRothDataScience/autoviz_test/blob/master/AutoViz_test.ipynb) 
 which contains these experiments and others.  The Github repository for AutoViz is available 
 [here]([https://github.com/AutoViML/AutoViz](https://github.com/AutoViML/AutoViz)) and the PyPi page is 
 [here]([https://pypi.org/project/autoviz/](https://pypi.org/project/autoviz/)).  A big thanks goes out to Ram Seshadri 
